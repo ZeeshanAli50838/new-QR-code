@@ -120,7 +120,7 @@ elif menu == "QR Generate":
         df_new = pd.DataFrame({"code": codes})
         df_new.to_csv(PRODUCT_FILE, mode='a', header=False, index=False)
 
-        base_url = "http://localhost:8501/?code="
+        https://new-qr-code-4crgyqzsb2epnwwe3dmvgf.streamlit.app/
 
         st.success(f"{qty} QR Codes بن گئے!")
 
