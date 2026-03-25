@@ -13,6 +13,9 @@ SCAN_FILE = "scans.csv"
 COUNTER_FILE = "counter.txt"
 STICKER_FOLDER = "stickers"
 
+# 👉 IMPORTANT (YOUR LIVE URL)
+base_url = "https://new-qr-code-4crgyqzsb2epnwwe3dmvgf.streamlit.app/?code="
+
 # ----------- CREATE FILES -----------
 if not os.path.exists(STICKER_FOLDER):
     os.makedirs(STICKER_FOLDER)
@@ -55,7 +58,7 @@ query_code = st.query_params.get("code", None)
 
 # ----------- CUSTOMER VIEW -----------
 if query_code and not st.session_state.admin:
-    st.title("Product Verification")
+    st.title("🔍 Product Verification")
 
     name = st.text_input("اپنا نام لکھیں")
     phone = st.text_input("اپنا واٹس ایپ نمبر لکھیں")
@@ -66,8 +69,11 @@ if query_code and not st.session_state.admin:
         else:
             status = "❌ یہ Fake Product ہے"
 
-        g = geocoder.ip('me')
-        location = g.city
+        try:
+            g = geocoder.ip('me')
+            location = g.city
+        except:
+            location = "Unknown"
 
         new_data = pd.DataFrame([{
             "code": query_code,
@@ -85,7 +91,7 @@ if query_code and not st.session_state.admin:
 
 # ----------- ADMIN LOGIN -----------
 if not st.session_state.admin:
-    st.title("Admin Login")
+    st.title("🔐 Admin Login")
 
     user = st.text_input("Username")
     pwd = st.text_input("Password", type="password")
@@ -95,7 +101,7 @@ if not st.session_state.admin:
             st.session_state.admin = True
             st.rerun()
         else:
-            st.error("غلط username یا password")
+            st.error("❌ غلط username یا password")
 
     st.stop()
 
@@ -110,7 +116,7 @@ if menu == "Logout":
 
 # ----------- QR GENERATE -----------
 elif menu == "QR Generate":
-    st.header("QR Codes Generate کریں")
+    st.header("📦 QR Codes Generate کریں")
 
     qty = st.number_input("کتنے QR بنانے ہیں؟", min_value=1)
 
@@ -120,9 +126,7 @@ elif menu == "QR Generate":
         df_new = pd.DataFrame({"code": codes})
         df_new.to_csv(PRODUCT_FILE, mode='a', header=False, index=False)
 
-        https://new-qr-code-4crgyqzsb2epnwwe3dmvgf.streamlit.app/
-
-        st.success(f"{qty} QR Codes بن گئے!")
+        st.success(f"✅ {qty} QR Codes بن گئے!")
 
         for code in codes:
             qr = qrcode.make(base_url + code)
@@ -133,12 +137,12 @@ elif menu == "QR Generate":
 
 # ----------- DASHBOARD -----------
 elif menu == "Dashboard":
-    st.header("Dashboard")
+    st.header("📊 Dashboard")
 
     scans = pd.read_csv(SCAN_FILE)
 
-    st.subheader("تمام Scans")
+    st.subheader("📋 تمام Scans")
     st.dataframe(scans)
 
-    st.subheader("Code Count")
+    st.subheader("📈 Code Count")
     st.bar_chart(scans["code"].value_counts())
